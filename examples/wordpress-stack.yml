@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    volumes:
+      - wp_root:/var/www/html
+    deploy:
+      rollback_config:
+        order: start-first # only one instance at a time
+      update_config:
+        order: start-first # only one instance at a time
+
+  unison-server:
+    image: wordpress/unison-sync
+    environment:
+      MODE: server # running in server mode
+    volumes:
+      - wp_root:/data # attach WordPress volume to /data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == node1 # only runs on node1
+
+  unison-client:
+    image: wordpress/unison-sync
+    environment:
+      INTERVAL: 15 # how often to sync in seconds (default 60s)
+      REMOTE: unison-server # hostname of server instance
+      MODE: client # running in client mode
+
+    volumes:
+      - wp_root:/data # attach WordPress volume to /data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == node2 # runs on node2
+
+volumes:
+  wp_root:

@@ -1,0 +1,15 @@
+# Preferences
+# see: https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html
+auto = true
+times = true
+owner = true
+group = true
+links = true
+batch = true
+prefer = newer
+confirmbigdel = true
+contactquietly = true
+
+# Do not log to a file
+log = true
+logfile = /dev/stdout
